@@ -8,7 +8,7 @@ namespace OpenTextSummarizer
     internal class Stemmer
     {
 
-        internal static Word StemWord(string word, Dictionary rules)
+        internal  Word StemWord(string word, Dictionary rules)
         {
             word = word.ToLower();
             Word newword = new Word();
@@ -18,7 +18,7 @@ namespace OpenTextSummarizer
             return newword;
         }
 
-        internal static string StemStrip(string word, Dictionary rules)
+        internal string StemStrip(string word, Dictionary rules)
         {
             string originalWord = word;
             word = StemFormat(word, rules);
@@ -31,14 +31,14 @@ namespace OpenTextSummarizer
 
         }
 
-        internal static string StemFormat(string word, Dictionary rules)
+        internal string StemFormat(string word, Dictionary rules)
         {
             word = StripPrefix(word, rules.Step1PrefixRules);
             word = StripSuffix(word, rules.Step1SuffixRules);
             return word;
         }
 
-        private static string StripSuffix(string word, Dictionary<string, string> suffixRule)
+        public string StripSuffix(string word, Dictionary<string, string> suffixRule)
         {
             //not simply using .Replace() in this method in case the 
             //rule.Key exists multiple times in the string.
@@ -53,7 +53,7 @@ namespace OpenTextSummarizer
             return word;
         }
 
-        private static string ReplaceWord(string word, Dictionary<string, string> replacementRule)
+        internal  string ReplaceWord(string word, Dictionary<string, string> replacementRule)
         {
             foreach (KeyValuePair<string, string> rule in replacementRule)
             {
@@ -66,7 +66,7 @@ namespace OpenTextSummarizer
             return word;
         }
 
-        private static string StripPrefix(string word, Dictionary<string, string> prefixRule)
+        internal string StripPrefix(string word, Dictionary<string, string> prefixRule)
         {
             //not simply using .Replace() in this method in case the 
             //rule.Key exists multiple times in the string.

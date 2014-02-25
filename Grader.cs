@@ -7,7 +7,7 @@ namespace OpenTextSummarizer
 {
     internal class Grader
     {
-        public static void Grade(Article article)
+        public void Grade(Article article)
         {
 
             CreateImportantWordsList(article);
@@ -18,9 +18,9 @@ namespace OpenTextSummarizer
 
             ApplySentenceFactors(article);
 
-        }
+        } 
 
-        private static void ApplySentenceFactors(Article article)
+        private void ApplySentenceFactors(Article article)
         {
             //grade the first sentence of the article higher.
             article.Sentences[0].Score *= 2;
@@ -37,7 +37,7 @@ namespace OpenTextSummarizer
             }
         }
 
-        private static void ExtractArticleConcepts(Article article)
+        private void ExtractArticleConcepts(Article article)
         {
             article.Concepts = new List<string> ();
             if (article.ImportantWords.Count > 5)
@@ -54,13 +54,13 @@ namespace OpenTextSummarizer
             }
         }
 
-        private static void GradeSentences(Article article)
+        private void GradeSentences(Article article)
         {
             foreach (Sentence sentence in article.Sentences)
             {
                 foreach (Word word in sentence.Words)
                 {
-                    string wordstem = Stemmer.StemStrip(word.Value, article.Rules);
+                    string wordstem = article.Stemmer.StemStrip(word.Value, article.Rules);
                     Word importantWord = article.ImportantWords.Find(delegate(Word match) {
                         return match.Stem == wordstem;
                     });
@@ -69,7 +69,7 @@ namespace OpenTextSummarizer
             }
         }
 
-        private static void CreateImportantWordsList(Article article)
+        private void CreateImportantWordsList(Article article)
         {
             Word[] wordsArray = new Word[article.WordCounts.Count()];
             article.WordCounts.CopyTo(wordsArray);
@@ -87,7 +87,7 @@ namespace OpenTextSummarizer
             article.ImportantWords.Sort(CompareWordsByFrequency);
         }
 
-        private static int CompareWordsByFrequency(Word lhs, Word rhs)
+        private int CompareWordsByFrequency(Word lhs, Word rhs)
         {
             return rhs.TermFrequency.CompareTo(lhs.TermFrequency);
         }

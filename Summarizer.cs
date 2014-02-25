@@ -1,17 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 using System.Security.Permissions;
+using System.Text;
 
 namespace OpenTextSummarizer
 {
     public class Summarizer
     {
-        static Summarizer() { }
+        internal Summarizer()
+        {
+        }
+
         public static SummarizedDocument Summarize(SummarizerArguments args)
         {
+            var CurrentSummarizer = new Summarizer();
+            return CurrentSummarizer.InnerSummarize(args, new Grader(), new Highlighter(), new Stemmer());
+        }
+
+        internal Stemmer m_Stemmer { get; set; }
+
+        internal SummarizedDocument InnerSummarize(SummarizerArguments args, Grader grader, Highlighter highlighter, Stemmer stemmer)
+        {
+            m_Stemmer = stemmer;
             if (args == null) return null;
             Article article = null;
             if (args.InputString.Length > 0 && args.InputFile.Length == 0)
@@ -22,14 +34,12 @@ namespace OpenTextSummarizer
             {
                 article = ParseFile(args.InputFile, args);
             }
-            Grader.Grade(article);
-            Highlighter.Highlight(article, args);
-            SummarizedDocument sumdoc = CreateSummarizedDocument(article, args);
-            return sumdoc;
-            
+            grader.Grade(article);
+            highlighter.Highlight(article, args);
+            return CreateSummarizedDocument(article, args);
         }
 
-        private static SummarizedDocument CreateSummarizedDocument(Article article, SummarizerArguments args)
+        internal SummarizedDocument CreateSummarizedDocument(Article article, SummarizerArguments args)
         {
             SummarizedDocument sumDoc = new SummarizedDocument();
             sumDoc.Concepts = article.Concepts;
@@ -43,22 +53,22 @@ namespace OpenTextSummarizer
             return sumDoc;
         }
 
-        private static Article ParseFile(string fileName, SummarizerArguments args)
+        internal Article ParseFile(string fileName, SummarizerArguments args)
         {
             string text = LoadFile(fileName);
             return ParseDocument(text, args);
         }
 
-        private static Article ParseDocument(string text, SummarizerArguments args)
+        internal Article ParseDocument(string text, SummarizerArguments args)
         {
             Dictionary rules = Dictionary.LoadFromFile(args.DictionaryLanguage);
-            Article article = new Article(rules);
+            Article article = new Article(rules, m_Stemmer);
             article.ParseText(text);
             return article;
         }
 
         [FileIOPermission(SecurityAction.Demand)]
-        private static string LoadFile(string fileName)
+        private string LoadFile(string fileName)
         {
             if (fileName != string.Empty)
                 return File.ReadAllText(fileName);

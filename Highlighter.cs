@@ -7,7 +7,7 @@ namespace OpenTextSummarizer
 {
     internal class Highlighter
     {
-        internal static void Highlight(Article article, SummarizerArguments args)
+        internal void Highlight(Article article, SummarizerArguments args)
         {
             if (args.DisplayPercent == 0 && args.DisplayLines == 0) return;
             if (args.DisplayPercent == 0)
@@ -21,7 +21,7 @@ namespace OpenTextSummarizer
             }
         }
 
-        private static void SelectSentencesByPercent(Article article, int percent)
+        internal void SelectSentencesByPercent(Article article, int percent)
         {
             if(percent > 100) percent = 100;
             if(percent < 1) percent = 1;
@@ -39,7 +39,7 @@ namespace OpenTextSummarizer
 
         }
 
-        private static void SelectNumberOfSentences(Article article, int lineCount)
+        internal void SelectNumberOfSentences(Article article, int lineCount)
         {
             var sentencesByScore = article.Sentences.OrderByDescending(p => p.Score).Select(p => p);
             int loopCounter = 0;

@@ -27,7 +27,7 @@ namespace OpenTextSummarizer
         public Dictionary<string, string> SynonymRules { get; set; }
         public string Language { get; set; }
 
-        private Dictionary(){}
+        internal Dictionary(){}
 
         [FileIOPermission(SecurityAction.Demand, Read="$AppDir$\\dics")]
         public static Dictionary LoadFromFile(string DictionaryLanguage)

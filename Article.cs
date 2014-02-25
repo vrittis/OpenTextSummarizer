@@ -8,19 +8,26 @@ namespace OpenTextSummarizer
     internal class Article
     {
         public List<Sentence> Sentences { get; set; }
+
         public int LineCount { get; set; }
+
         public List<string> Concepts { get; set; }
+
         public Dictionary Rules { get; set; }
 
         public List<Word> ImportantWords { get; set; }
+
         public List<Word> WordCounts { get; set; }
 
+        public Stemmer Stemmer { get; set; }
 
-        public Article(Dictionary rules) { 
+        public Article(Dictionary rules, Stemmer stemmer)
+        {
             Sentences = new List<Sentence>();
             WordCounts = new List<Word>();
             Concepts = new List<string>();
             Rules = rules;
+            Stemmer = stemmer;
         }
 
         public void ParseText(string text)
@@ -49,8 +56,9 @@ namespace OpenTextSummarizer
         private void AddWordCount(string word)
         {
             Word stemmedWord = Stemmer.StemWord(word, this.Rules);
-            if (word == null || word == string.Empty || word == " " || word == "\n" || word == "\t") return;            
-            Word foundWord = WordCounts.Find(delegate(Word match) {
+            if (word == null || word == string.Empty || word == " " || word == "\n" || word == "\t") return;
+            Word foundWord = WordCounts.Find(delegate(Word match)
+            {
                 return match.Stem == stemmedWord.Stem;
             });
             if (foundWord == null)
@@ -61,7 +69,6 @@ namespace OpenTextSummarizer
             {
                 foundWord.TermFrequency++;
             }
-
         }
 
         private bool IsSentenceBreak(string word)
@@ -71,17 +78,13 @@ namespace OpenTextSummarizer
                 .Where(p => word.EndsWith(p, StringComparison.CurrentCultureIgnoreCase))
                 .Count() > 0);
 
-            
-
             if (shouldBreak == false) return shouldBreak;
 
             shouldBreak = (this.Rules.NotALinebreakRules
                 .Where(p => word.StartsWith(p, StringComparison.CurrentCultureIgnoreCase))
                 .Count() == 0);
 
-
             return shouldBreak;
         }
-
     }
 }
