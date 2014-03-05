@@ -45,13 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dev\ContentProvider.cs" />
+    <Compile Include="Dev\Parser.cs" />
+    <Compile Include="Dev\Summarizer.cs" />
     <Compile Include="Factories\DictionaryFactory.cs" />
-    <Compile Include="TestThatArticle.cs" />
-    <Compile Include="TestThatHighlighter.cs" />
-    <Compile Include="TestThatStemmer.cs" />
-    <Compile Include="TestThatSummarizer.cs" />
-    <Compile Include="TestThatSummarizerArguments.cs" />
-    <Compile Include="TestThatWord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +60,7 @@
       <Name>OpenTextSummarizer</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

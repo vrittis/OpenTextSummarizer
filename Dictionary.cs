@@ -1,40 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Security.Permissions;
 using System.IO;
-using System.Xml.Linq;
+using System.Linq;
 using System.Reflection;
+using System.Security.Permissions;
+using System.Text;
+using System.Xml.Linq;
 
 namespace OpenTextSummarizer
 {
     internal class Dictionary
     {
-        public List<Word> UnimportantWords { get; set; }
+        public List<string> UnimportantWords { get; set; }
+
         public List<string> LinebreakRules { get; set; }
+
         public List<string> NotALinebreakRules { get; set; }
+
         public List<string> DepreciateValueRule { get; set; }
+
         public List<string> TermFreqMultiplierRule { get; set; }
 
-        //the replacement rules are stored as KeyValuePair<string,string>s 
+        //the replacement rules are stored as KeyValuePair<string,string>s
         //the Key is the search term. the Value is the replacement term
-        public Dictionary<string, string> Step1PrefixRules { get; set; } 
+        public Dictionary<string, string> Step1PrefixRules { get; set; }
+
         public Dictionary<string, string> Step1SuffixRules { get; set; }
+
         public Dictionary<string, string> ManualReplacementRules { get; set; }
+
         public Dictionary<string, string> PrefixRules { get; set; }
+
         public Dictionary<string, string> SuffixRules { get; set; }
+
         public Dictionary<string, string> SynonymRules { get; set; }
+
         public string Language { get; set; }
 
-        internal Dictionary(){}
+        internal Dictionary()
+        {
+        }
 
-        [FileIOPermission(SecurityAction.Demand, Read="$AppDir$\\dics")]
+        [FileIOPermission(SecurityAction.Demand, Read = "$AppDir$\\dics")]
         public static Dictionary LoadFromFile(string DictionaryLanguage)
         {
             string dictionaryFile = string.Format(@"{1}\dics\{0}.xml", DictionaryLanguage,
                Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase).Substring(6));
-            if(!File.Exists(dictionaryFile))
+            if (!File.Exists(dictionaryFile))
             {
                 throw new FileNotFoundException("Could Not Load Dictionary: " + dictionaryFile);
             }
@@ -52,11 +64,11 @@ namespace OpenTextSummarizer
             dict.TermFreqMultiplierRule = LoadValueOnlySection(doc, "grader-tf");
 
             List<string> unimpwords = new List<string>();
-            dict.UnimportantWords = new List<Word>();
+            dict.UnimportantWords = new List<string>();
             unimpwords = LoadValueOnlySection(doc, "grader-tc");
             foreach (string unimpword in unimpwords)
             {
-                dict.UnimportantWords.Add(new Word(unimpword));
+                dict.UnimportantWords.Add(unimpword);
             }
             return dict;
         }
@@ -78,7 +90,7 @@ namespace OpenTextSummarizer
             IEnumerable<XElement> step1pre = doc.Elements(section).Elements(container);
             foreach (var x in step1pre.Elements())
             {
-                list.Add(x.Value);                
+                list.Add(x.Value);
             }
             return list;
         }
@@ -96,6 +108,5 @@ namespace OpenTextSummarizer
             }
             return dictionary;
         }
-
     }
 }
