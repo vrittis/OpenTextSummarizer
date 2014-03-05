@@ -14,7 +14,11 @@ The second argument is a `ISummarizerArguments` implementation, the default one 
 ```csharp
 var summarizedDocument = OpenTextSummarizer.Summarizer.Summarize(
                 new OpenTextSummarizer.FileContentProvider("TextualData\\AutomaticSummarization.txt"),
-                new SummarizerArguments() { Language = "en", MaxSummarySentences = 5 });
+                new SummarizerArguments() 
+				{
+					Language = "en",
+					MaxSummarySentences = 5
+				});
 ```
 
 ##Advanced
@@ -35,14 +39,21 @@ public class TelegramContentParser : IContentParser
     public List<Sentence> SplitContentIntoSentences(string Content)
     {
         return Content.Split(new string[] { "STOP" }, StringSplitOptions.RemoveEmptyEntries)
-            .Select((currentString, currentIndex) => new Sentence() { OriginalSentence = currentString, OriginalSentenceIndex = currentIndex })
+            .Select((currentString, currentIndex) => new Sentence() {
+				OriginalSentence = currentString,
+				OriginalSentenceIndex = currentIndex
+			})
             .ToList();
     }
 
     public List<TextUnit> SplitSentenceIntoTextUnits(string sentence)
     {
         return sentence.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(currentString => new TextUnit() { RawValue = currentString, FormattedValue = currentString.ToLower(), Stem = currentString.ToLower() })
+            .Select(currentString => new TextUnit() {
+				RawValue = currentString,
+				FormattedValue = currentString.ToLower(),
+				Stem = currentString.ToLower()
+			})
             .ToList();
     }
 }
@@ -51,7 +62,11 @@ public class TelegramContentParser : IContentParser
 
 var summarizedDocument = OpenTextSummarizer.Summarizer.Summarize(
                 new OpenTextSummarizer.FileContentProvider("TextualData\\AutomaticSummarization.txt"),
-                new SummarizerArguments() { Language = "en", MaxSummarySentences = 5, ContentParser = () => new TelegramContentParser() });
+                new SummarizerArguments() {
+					Language = "en",
+					MaxSummarySentences = 5,
+					ContentParser = () => new TelegramContentParser()
+				});
 ```
 
 Have a look at the interfaces to see what each will needs for implementation.
@@ -59,9 +74,9 @@ Have a look at the interfaces to see what each will needs for implementation.
 #Notes
 
 This version of OpenTextSummarizer has been pushed to Github in order to correct some bugs. I've tried to make it extensible a bit more than what was 
-The initial port this version started from is located on codeplex (http://ots.codeplex.com) and was written for .Net 2. This version will target .Net 4.0 and may use some functionalities that will prevent you from using it under .Net 2.0
+The initial port this version started from is located on codeplex (http://ots.codeplex.com) and was written for .Net 2. It now uses .Net 3.5
 
 Roadmap:
 * ~~Add qualification tests~~ (almost done, i will stop now for the time and starting changing behaviors)
-* fix bugs (stemmer bug on lowercasing of some words only)
-* add configurable behavior: sentence scoring mainly will benefit from these changes
+* ~~fix bugs (stemmer bug on lowercasing of some words only)~~
+* add configurable behavior
