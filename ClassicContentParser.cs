@@ -1,8 +1,8 @@
-﻿using OpenTextSummarizer.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OpenTextSummarizer.Interfaces;
 
 namespace OpenTextSummarizer
 {
@@ -20,9 +20,11 @@ namespace OpenTextSummarizer
 
         public List<Sentence> SplitContentIntoSentences(string Content)
         {
-            //TODO: string checking
-
             var listSentences = new List<Sentence>();
+            if (string.IsNullOrEmpty(Content))
+            {
+                return listSentences;
+            }
 
             string[] words = Content.Split(' ', '\r'); //space and line feed characters are the ends of words.
             Sentence cursentence = new Sentence() { OriginalSentenceIndex = listSentences.Count };
@@ -32,14 +34,18 @@ namespace OpenTextSummarizer
             {
                 string locWord = word;
                 if (locWord.StartsWith("\n") && word.Length > 2) locWord = locWord.Replace("\n", "");
-                originalSentence.AppendFormat("{0} ", locWord);
 
                 if (IsSentenceBreak(locWord))
                 {
+                    originalSentence.AppendFormat("{0}", locWord);
                     cursentence.OriginalSentence = originalSentence.ToString();
                     cursentence = new Sentence() { OriginalSentenceIndex = listSentences.Count };
                     originalSentence = new StringBuilder();
                     listSentences.Add(cursentence);
+                }
+                else
+                {
+                    originalSentence.AppendFormat("{0} ", locWord);
                 }
             }
             cursentence.OriginalSentence = originalSentence.ToString();
@@ -64,9 +70,11 @@ namespace OpenTextSummarizer
 
         public List<TextUnit> SplitSentenceIntoTextUnits(string sentence)
         {
-            //TODO: string checking
-
             var listUnits = new List<TextUnit>();
+            if (string.IsNullOrEmpty(sentence))
+            {
+                return listUnits;
+            }
 
             foreach (string word in sentence.Split(' ', '\r'))
             {

@@ -1,9 +1,5 @@
-﻿using OpenTextSummarizer;
-using OpenTextSummarizer.Interfaces;
+﻿using OpenTextSummarizer.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OpenTextSummarizer
 {
@@ -11,9 +7,9 @@ namespace OpenTextSummarizer
     {
         public int FilteringConceptsCap { get; set; }
 
-        public int LowerSentenceNumberCap { get; set; }
+        public int MaxSummarySentences { get; set; }
 
-        public int LowerPercentageOfInitialContentCap { get; set; }
+        public int MaxSummarySizeInPercent { get; set; }
 
         public string Language { get; set; }
 
@@ -21,8 +17,8 @@ namespace OpenTextSummarizer
         {
             Language = "en";
             FilteringConceptsCap = 5;
-            LowerSentenceNumberCap = 10;
-            LowerPercentageOfInitialContentCap = 10;
+            MaxSummarySentences = 10;
+            MaxSummarySizeInPercent = 10;
 
             ContentParser = () => new ClassicContentParser(Rules, new TextUnitBuilder(Rules));
             ContentAnalyzer = () => new ClassicContentAnalyzer(Rules);

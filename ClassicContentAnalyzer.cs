@@ -6,6 +6,9 @@ using System.Text;
 
 namespace OpenTextSummarizer
 {
+    /// <summary>
+    /// Analyzer class to determine important text units and score sentences
+    /// </summary>
     internal class ClassicContentAnalyzer : IContentAnalyzer
     {
         public Dictionary m_Rules { get; set; }

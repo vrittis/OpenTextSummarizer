@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 
 namespace OpenTextSummarizer
 {
+
+    [DebuggerDisplay("Value: {ScoredTextUnit.FormattedValue} - Stem: {ScoredTextUnit.Stem} - Score: {Score}")]
     public class TextUnitScore
     {
         public TextUnit ScoredTextUnit { get; set; }

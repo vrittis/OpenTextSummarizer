@@ -1,8 +1,6 @@
-﻿using OpenTextSummarizer.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using OpenTextSummarizer.Interfaces;
 
 namespace OpenTextSummarizer
 {
@@ -18,7 +16,7 @@ namespace OpenTextSummarizer
         public TextUnit Build(string word)
         {
             var builtTextUnit = new TextUnit();
-            builtTextUnit.RawValue = word;
+            builtTextUnit.RawValue = word.ToLower();
             builtTextUnit.FormattedValue = Format(builtTextUnit.RawValue);
             builtTextUnit.Stem = Stem(builtTextUnit.FormattedValue);
             if (builtTextUnit.Stem.Length <= 2)
@@ -47,34 +45,42 @@ namespace OpenTextSummarizer
 
         public string StripSuffix(string word, Dictionary<string, string> suffixRules)
         {
-            var suffixRule = suffixRules.FirstOrDefault(kvp => word.EndsWith(kvp.Key));
-            if (!suffixRule.Equals(default(KeyValuePair<string, string>)))
+            //not simply using .Replace() in this method in case the 
+            //rule.Key exists multiple times in the string.
+            foreach (KeyValuePair<string, string> rule in suffixRules)
             {
-                //not simply using .Replace() in this method in case the
-                //rule.Key exists multiple times in the string.
-                word = word.Substring(0, word.Length - suffixRule.Key.Length) + suffixRule.Value;
+                if (word.EndsWith(rule.Key))
+                {
+                    word = word.Substring(0, word.Length - rule.Key.Length) + rule.Value;
+                }
             }
+
             return word;
         }
 
         internal string ReplaceWord(string word, Dictionary<string, string> replacementRules)
         {
-            var replacementRule = replacementRules.FirstOrDefault(kvp => kvp.Key == word);
-            if (!replacementRule.Equals(default(KeyValuePair<string, string>)))
+            foreach (KeyValuePair<string, string> rule in replacementRules)
             {
-                word = replacementRule.Value;
+                if (word == rule.Key)
+                {
+                    return rule.Value;
+                }
             }
+
             return word;
         }
 
         internal string StripPrefix(string word, Dictionary<string, string> prefixRules)
         {
-            var prefixRule = prefixRules.FirstOrDefault(kvp => word.StartsWith(kvp.Key));
-            if (!prefixRule.Equals(default(KeyValuePair<string, string>)))
+            //not simply using .Replace() in this method in case the 
+            //rule.Key exists multiple times in the string.
+            foreach (KeyValuePair<string, string> rule in prefixRules)
             {
-                //not simply using .Replace() in this method in case the
-                //rule.Key exists multiple times in the string.
-                word = prefixRule.Value + word.Substring(prefixRule.Key.Length);
+                if (word.StartsWith(rule.Key))
+                {
+                    word = rule.Value + word.Substring(rule.Key.Length);
+                }
             }
             return word;
         }

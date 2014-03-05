@@ -52,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnalyzedDocument.cs" />
-    <Compile Include="ClassicContentGrader.cs" />
+    <Compile Include="ClassicContentAnalyzer.cs" />
     <Compile Include="ClassicContentParser.cs" />
     <Compile Include="ClassicContentSummarizer.cs" />
     <Compile Include="Interfaces\IContentAnalyzer.cs" />

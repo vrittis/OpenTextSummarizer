@@ -1,7 +1,11 @@
 OpenTextSummarizer
 ==================
 
-.net port and adaptation of libots, initially ported by PatrickBurrows
+.net port and adaptation of libots, initially ported by PatrickBurrows to C# and adapted to include testing, bugfixes and extension capabilities after being reviewed at http://samy.beaudoux.net/blog/?p=23
+
+Usage
+-----
+
 
 This version of OpenTextSummarizer has been pushed to Github in order to correct some bugs and add some behaviors that i find interesting.
 The initial port this version started from is located on codeplex (http://ots.codeplex.com) and was written for .Net 2. This version will target .Net 4.0 and may use some functionalities that will prevent you from using it under .Net 2.0
