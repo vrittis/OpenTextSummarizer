@@ -73,7 +73,7 @@ Have a look at the interfaces to see what each will needs for implementation.
 
 #Notes
 
-This version of OpenTextSummarizer has been pushed to Github in order to correct some bugs. I've tried to make it extensible a bit more than what was 
+This version of OpenTextSummarizer has been pushed to Github in order to correct some bugs. I've tried to make it extensible a bit more than what was initially ported.
 The initial port this version started from is located on codeplex (http://ots.codeplex.com) and was written for .Net 2. It now uses .Net 3.5
 
 Roadmap:
