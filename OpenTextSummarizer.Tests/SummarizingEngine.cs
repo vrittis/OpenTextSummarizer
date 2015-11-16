@@ -59,10 +59,10 @@ namespace OpenTextSummarizer.Tests.SummarizingEngine
                 }
             }
 
-            [Test, TestCaseSource("NullArgumentsSource"), ExpectedException(typeof(ArgumentNullException))]
+            [Test, TestCaseSource(nameof(NullArgumentsSource))]
             public void throws_if_null_arguments_are_passed(IContentProvider contentProvider, IContentParser contentParser)
             {
-                Target.ParseContent(contentProvider, contentParser);
+                Assert.Throws<ArgumentNullException>(() => Target.ParseContent(contentProvider, contentParser));
             }
 
             [Test]
@@ -101,18 +101,24 @@ namespace OpenTextSummarizer.Tests.SummarizingEngine
                 Assert.IsTrue(parsedDocument.Sentences.All(s => s.TextUnits.Count == 1));
             }
 
-            [Test, ExpectedException(typeof(InvalidOperationException))]
+            [Test]
             public void throws_if_IContentParser_returns_null_list_of_sentences()
             {
-                TargetContentParser.SplitContentIntoSentences(Arg.Any<string>()).Returns((List<Sentence>)null);
-                Target.ParseContent(TargetContentProvider, TargetContentParser);
+                Assert.Throws<InvalidOperationException>(() =>
+                {
+                    TargetContentParser.SplitContentIntoSentences(Arg.Any<string>()).Returns((List<Sentence>) null);
+                    Target.ParseContent(TargetContentProvider, TargetContentParser);
+                });
             }
 
-            [Test, ExpectedException(typeof(InvalidOperationException))]
+            [Test]
             public void throws_if_IContentParser_returns_null_list_of_textunits()
             {
-                TargetContentParser.SplitSentenceIntoTextUnits(Arg.Any<string>()).Returns((List<TextUnit>)null);
-                Target.ParseContent(TargetContentProvider, TargetContentParser);
+                Assert.Throws<InvalidOperationException>(() =>
+                {
+                    TargetContentParser.SplitSentenceIntoTextUnits(Arg.Any<string>()).Returns((List<TextUnit>) null);
+                    Target.ParseContent(TargetContentProvider, TargetContentParser);
+                });
             }
         }
 
@@ -150,24 +156,35 @@ namespace OpenTextSummarizer.Tests.SummarizingEngine
                 }
             }
 
-            [Test, TestCaseSource("NullArgumentsSource"), ExpectedException(typeof(ArgumentNullException))]
+            [Test, TestCaseSource(nameof(NullArgumentsSource))]
             public void throws_if_null_arguments_are_passed(ParsedDocument parsedDocument, IContentAnalyzer contentAnalyzer)
             {
-                Target.AnalyzeParsedContent(parsedDocument, contentAnalyzer);
+                Assert.Throws<ArgumentNullException>(() =>
+                {
+                    Target.AnalyzeParsedContent(parsedDocument, contentAnalyzer);
+                });
             }
 
-            [Test, ExpectedException(typeof(InvalidOperationException))]
+            [Test]
             public void throws_if_IContentAnalyzer_GetImportantTextUnits_returns_null()
             {
-                TargetContentAnalyzer.GetImportantTextUnits(Arg.Any<List<Sentence>>()).Returns((List<TextUnitScore>)null);
-                Target.AnalyzeParsedContent(TargetParsedDocument, TargetContentAnalyzer);
+                Assert.Throws<InvalidOperationException>(() =>
+                {
+                    TargetContentAnalyzer.GetImportantTextUnits(Arg.Any<List<Sentence>>())
+                        .Returns((List<TextUnitScore>) null);
+                    Target.AnalyzeParsedContent(TargetParsedDocument, TargetContentAnalyzer);
+                });
             }
 
-            [Test, ExpectedException(typeof(InvalidOperationException))]
+            [Test]
             public void throws_if_IContentAnalyzer_ScoreSentences_returns_null()
             {
-                TargetContentAnalyzer.ScoreSentences(Arg.Any<List<Sentence>>(), Arg.Any<List<TextUnitScore>>()).Returns((List<SentenceScore>)null);
-                Target.AnalyzeParsedContent(TargetParsedDocument, TargetContentAnalyzer);
+                Assert.Throws<InvalidOperationException>(() =>
+                {
+                    TargetContentAnalyzer.ScoreSentences(Arg.Any<List<Sentence>>(), Arg.Any<List<TextUnitScore>>())
+                        .Returns((List<SentenceScore>) null);
+                    Target.AnalyzeParsedContent(TargetParsedDocument, TargetContentAnalyzer);
+                });
             }
 
             [Test]
@@ -242,10 +259,13 @@ namespace OpenTextSummarizer.Tests.SummarizingEngine
                 }
             }
 
-            [Test, TestCaseSource("NullArgumentsSource"), ExpectedException(typeof(ArgumentNullException))]
+            [Test, TestCaseSource(nameof(NullArgumentsSource))]
             public void throws_if_null_arguments_are_passed(AnalyzedDocument analyzedDocument, IContentSummarizer contentSummarizer, ISummarizerArguments summarizerArguments)
             {
-                Target.SummarizeAnalysedContent(analyzedDocument, contentSummarizer, summarizerArguments);
+                Assert.Throws<ArgumentNullException>(() =>
+                {
+                    Target.SummarizeAnalysedContent(analyzedDocument, contentSummarizer, summarizerArguments);
+                });
             }
 
             [Test]
@@ -262,18 +282,28 @@ namespace OpenTextSummarizer.Tests.SummarizingEngine
                 TargetContentSummarizer.Received(1).GetSentences(TargetAnalyzedDocument, TargetSummarizerArguments);
             }
 
-            [Test, ExpectedException(typeof(InvalidOperationException))]
+            [Test]
             public void throws_if_IContentSummarizer_GetConcepts_returns_null()
             {
-                TargetContentSummarizer.GetConcepts(Arg.Any<AnalyzedDocument>(), Arg.Any<ISummarizerArguments>()).Returns((List<string>)null);
-                Target.SummarizeAnalysedContent(TargetAnalyzedDocument, TargetContentSummarizer, TargetSummarizerArguments);
+                Assert.Throws<InvalidOperationException>(() =>
+                {
+                    TargetContentSummarizer.GetConcepts(Arg.Any<AnalyzedDocument>(), Arg.Any<ISummarizerArguments>())
+                        .Returns((List<string>) null);
+                    Target.SummarizeAnalysedContent(TargetAnalyzedDocument, TargetContentSummarizer,
+                        TargetSummarizerArguments);
+                });
             }
 
-            [Test, ExpectedException(typeof(InvalidOperationException))]
+            [Test]
             public void throws_if_IContentSummarizer_GetSentences_returns_null()
             {
-                TargetContentSummarizer.GetSentences(Arg.Any<AnalyzedDocument>(), Arg.Any<ISummarizerArguments>()).Returns((List<string>)null);
-                Target.SummarizeAnalysedContent(TargetAnalyzedDocument, TargetContentSummarizer, TargetSummarizerArguments);
+                Assert.Throws<InvalidOperationException>(() =>
+                {
+                    TargetContentSummarizer.GetSentences(Arg.Any<AnalyzedDocument>(), Arg.Any<ISummarizerArguments>())
+                        .Returns((List<string>) null);
+                    Target.SummarizeAnalysedContent(TargetAnalyzedDocument, TargetContentSummarizer,
+                        TargetSummarizerArguments);
+                });
             }
 
             [Test]
