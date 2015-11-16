@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace OpenTextSummarizer
+﻿namespace OpenTextSummarizer
 {
     public class SentenceScore
     {
         public Sentence ScoredSentence { get; set; }
 
-        public Double Score { get; set; }
+        public double Score { get; set; }
     }
 }

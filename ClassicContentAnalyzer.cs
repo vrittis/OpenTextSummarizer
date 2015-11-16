@@ -1,22 +1,20 @@
-﻿using OpenTextSummarizer.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using OpenTextSummarizer.Interfaces;
 
 namespace OpenTextSummarizer
 {
     /// <summary>
-    /// Analyzer class to determine important text units and score sentences
+    ///     Analyzer class to determine important text units and score sentences
     /// </summary>
     internal class ClassicContentAnalyzer : IContentAnalyzer
     {
-        public Dictionary m_Rules { get; set; }
-
         public ClassicContentAnalyzer(Dictionary Rules)
         {
             m_Rules = Rules;
         }
+
+        public Dictionary m_Rules { get; set; }
 
         public List<TextUnitScore> GetImportantTextUnits(List<Sentence> Sentences)
         {
@@ -38,7 +36,10 @@ namespace OpenTextSummarizer
                 }
             }
 
-            return textUnitFrequencyGrader.OrderByDescending(kvp => kvp.Value).Select(kvp => new TextUnitScore() { ScoredTextUnit = kvp.Key, Score = kvp.Value }).ToList();
+            return
+                textUnitFrequencyGrader.OrderByDescending(kvp => kvp.Value)
+                    .Select(kvp => new TextUnitScore {ScoredTextUnit = kvp.Key, Score = kvp.Value})
+                    .ToList();
         }
 
         public List<SentenceScore> ScoreSentences(List<Sentence> Sentences, List<TextUnitScore> importantTextUnits)
@@ -47,9 +48,9 @@ namespace OpenTextSummarizer
             var listSentenceScorer = new List<SentenceScore>();
             foreach (var s in Sentences.Where(s => s.TextUnits.Count > 2))
             {
-                var newSentenceScorer = new SentenceScore();
-                newSentenceScorer.ScoredSentence = s;
-                newSentenceScorer.Score = newSentenceScorer.ScoredSentence.TextUnits.Count(tu => stemList.Contains(tu.Stem));
+                var newSentenceScorer = new SentenceScore {ScoredSentence = s};
+                newSentenceScorer.Score =
+                    newSentenceScorer.ScoredSentence.TextUnits.Count(tu => stemList.Contains(tu.Stem));
 
                 if (s.TextUnits[0].RawValue.Contains("\n") && s.TextUnits[1].RawValue.Contains("\n"))
                 {

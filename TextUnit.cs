@@ -10,14 +10,13 @@
 
         public override int GetHashCode()
         {
-            if (Stem == null) return 0;
-            return Stem.GetHashCode();
+            return Stem?.GetHashCode() ?? 0;
         }
 
         public override bool Equals(object obj)
         {
-            TextUnit other = obj as TextUnit;
-            return other != null && other.Stem == this.Stem;
+            var other = obj as TextUnit;
+            return other != null && other.Stem == Stem;
         }
     }
 }
