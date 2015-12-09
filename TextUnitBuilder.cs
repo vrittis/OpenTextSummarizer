@@ -1,22 +1,20 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using OpenTextSummarizer.Interfaces;
 
 namespace OpenTextSummarizer
 {
     internal class TextUnitBuilder : ITextUnitBuilder
     {
-        internal Dictionary m_Rules { get; set; }
-
         public TextUnitBuilder(Dictionary Rules)
         {
             m_Rules = Rules;
         }
 
+        internal Dictionary m_Rules { get; set; }
+
         public TextUnit Build(string word)
         {
-            var builtTextUnit = new TextUnit();
-            builtTextUnit.RawValue = word.ToLower();
+            var builtTextUnit = new TextUnit {RawValue = word.ToLower()};
             builtTextUnit.FormattedValue = Format(builtTextUnit.RawValue);
             builtTextUnit.Stem = Stem(builtTextUnit.FormattedValue);
             if (builtTextUnit.Stem.Length <= 2)
@@ -47,7 +45,7 @@ namespace OpenTextSummarizer
         {
             //not simply using .Replace() in this method in case the 
             //rule.Key exists multiple times in the string.
-            foreach (KeyValuePair<string, string> rule in suffixRules)
+            foreach (var rule in suffixRules)
             {
                 if (word.EndsWith(rule.Key))
                 {
@@ -60,7 +58,7 @@ namespace OpenTextSummarizer
 
         internal string ReplaceWord(string word, Dictionary<string, string> replacementRules)
         {
-            foreach (KeyValuePair<string, string> rule in replacementRules)
+            foreach (var rule in replacementRules)
             {
                 if (word == rule.Key)
                 {
@@ -75,7 +73,7 @@ namespace OpenTextSummarizer
         {
             //not simply using .Replace() in this method in case the 
             //rule.Key exists multiple times in the string.
-            foreach (KeyValuePair<string, string> rule in prefixRules)
+            foreach (var rule in prefixRules)
             {
                 if (word.StartsWith(rule.Key))
                 {

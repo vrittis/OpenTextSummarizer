@@ -13,7 +13,7 @@ namespace OpenTextSummarizer
         {
             if (string.IsNullOrEmpty(filePath))
             {
-                throw new ArgumentNullException("filePath");
+                throw new ArgumentNullException(nameof(filePath));
             }
 
             if (!System.IO.File.Exists(filePath))

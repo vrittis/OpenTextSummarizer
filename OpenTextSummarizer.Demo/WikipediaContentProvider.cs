@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HtmlAgilityPack;
+using OpenTextSummarizer.Interfaces;
 
 namespace OpenTextSummarizer.Demo
 {
-    public class WikipediaContentProvider : OpenTextSummarizer.Interfaces.IContentProvider
+    public class WikipediaContentProvider : IContentProvider
     {
-        private string wikipediaContent = string.Empty;
+        private readonly string _wikipediaContent;
 
-        public WikipediaContentProvider(string ArticleName)
+        public WikipediaContentProvider(string articleName)
         {
-            var hapHtmlWeb = new HtmlAgilityPack.HtmlWeb();
-            var htmlDocument = hapHtmlWeb.Load(string.Format("http://en.wikipedia.org/wiki/{0}", ArticleName));
-            wikipediaContent = htmlDocument.DocumentNode.SelectSingleNode("//div[@id=\"mw-content-text\"]").InnerText;
+            var hapHtmlWeb = new HtmlWeb();
+            var htmlDocument = hapHtmlWeb.Load($"http://en.wikipedia.org/wiki/{articleName}");
+            _wikipediaContent = htmlDocument.DocumentNode.SelectSingleNode("//div[@id=\"mw-content-text\"]").InnerText;
         }
 
-        public string Content
-        {
-            get { return wikipediaContent.Replace("\n", "\r\n"); }
-        }
+        public string Content => _wikipediaContent.Replace("\n", "\r\n");
     }
 }

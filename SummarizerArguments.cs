@@ -25,24 +25,24 @@ namespace OpenTextSummarizer
             ContentSummarizer = () => new ClassicContentSummarizer();
         }
 
-        private Dictionary m_Rules = null;
-        private object m_RulesLock = new object();
+        private Dictionary _mRules;
+        private object _mRulesLock = new object();
 
         internal Dictionary Rules
         {
             get
             {
-                if (m_Rules == null)
+                if (_mRules == null)
                 {
-                    lock (m_RulesLock)
+                    lock (_mRulesLock)
                     {
-                        if (m_Rules == null)
+                        if (_mRules == null)
                         {
-                            m_Rules = Dictionary.LoadFromFile(Language);
+                            _mRules = Dictionary.LoadFromFile(Language);
                         }
                     }
                 }
-                return m_Rules;
+                return _mRules;
             }
         }
 
