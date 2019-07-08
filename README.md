@@ -21,7 +21,7 @@ var summarizedDocument = OpenTextSummarizer.Summarizer.Summarize(
 				});
 ```
 
-##Advanced
+## Advanced
 
 It is possible to change some behavior of the summarizer. Basically what is happening is that the summarizing engine will pipe three operations together in order to create the summary:
 * parsing: splitting text into sentences and sentences into words. This part is in charge of a `IContentParser` implementation
@@ -71,7 +71,7 @@ var summarizedDocument = OpenTextSummarizer.Summarizer.Summarize(
 
 Have a look at the interfaces to see what each will needs for implementation.
 
-#Notes
+# Notes
 
 This version of OpenTextSummarizer has been pushed to Github in order to correct some bugs. I've tried to make it extensible a bit more than what was initially ported.
 The initial port this version started from is located on codeplex (http://ots.codeplex.com) and was written for .Net 2. It now uses .Net 3.5
