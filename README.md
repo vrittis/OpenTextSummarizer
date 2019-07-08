@@ -3,9 +3,9 @@ OpenTextSummarizer
 
 .net port and adaptation of libots, initially ported by PatrickBurrows to C# and forked by yours truly as a kind of exercice after a review at http://samy.beaudoux.net/blog/?p=23
 
-#Usage
+# Usage
 
-##Basic
+## Basic
 
 To use the original OpenTextSummarizer algorithm, just call the static `Summarize` method on the summarizer. You can pass content through a `IContentProvider` implementation.
 There are two implementations matching what existed in the original library, `DirectTextContentProvider` and `FileContentProvider`.
