@@ -13,12 +13,12 @@ The second argument is a `ISummarizerArguments` implementation, the default one 
 
 ```csharp
 var summarizedDocument = OpenTextSummarizer.Summarizer.Summarize(
-                new OpenTextSummarizer.FileContentProvider("TextualData\\AutomaticSummarization.txt"),
-                new SummarizerArguments() 
-				{
-					Language = "en",
-					MaxSummarySentences = 5
-				});
+	new OpenTextSummarizer.FileContentProvider("TextualData\\AutomaticSummarization.txt"),
+	new SummarizerArguments() 
+	{
+		Language = "en",
+		MaxSummarySentences = 5
+	});
 ```
 
 ## Advanced
@@ -40,21 +40,19 @@ public class TelegramContentParser : IContentParser
     {
         return Content.Split(new string[] { "STOP" }, StringSplitOptions.RemoveEmptyEntries)
             .Select((currentString, currentIndex) => new Sentence() {
-				OriginalSentence = currentString,
-				OriginalSentenceIndex = currentIndex
-			})
-            .ToList();
+		OriginalSentence = currentString,
+		OriginalSentenceIndex = currentIndex
+	    }).ToList();
     }
 
     public List<TextUnit> SplitSentenceIntoTextUnits(string sentence)
     {
         return sentence.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)
             .Select(currentString => new TextUnit() {
-				RawValue = currentString,
-				FormattedValue = currentString.ToLower(),
-				Stem = currentString.ToLower()
-			})
-            .ToList();
+		RawValue = currentString,
+		FormattedValue = currentString.ToLower(),
+		Stem = currentString.ToLower()
+	     }).ToList();
     }
 }
 
@@ -63,10 +61,10 @@ public class TelegramContentParser : IContentParser
 var summarizedDocument = OpenTextSummarizer.Summarizer.Summarize(
                 new OpenTextSummarizer.FileContentProvider("TextualData\\AutomaticSummarization.txt"),
                 new SummarizerArguments() {
-					Language = "en",
-					MaxSummarySentences = 5,
-					ContentParser = () => new TelegramContentParser()
-				});
+			Language = "en",
+			MaxSummarySentences = 5,
+			ContentParser = () => new TelegramContentParser()
+		});
 ```
 
 Have a look at the interfaces to see what each will needs for implementation.
