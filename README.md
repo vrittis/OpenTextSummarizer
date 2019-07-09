@@ -59,12 +59,12 @@ public class TelegramContentParser : IContentParser
 //...
 
 var summarizedDocument = OpenTextSummarizer.Summarizer.Summarize(
-                new OpenTextSummarizer.FileContentProvider("TextualData\\AutomaticSummarization.txt"),
-                new SummarizerArguments() {
-			Language = "en",
-			MaxSummarySentences = 5,
-			ContentParser = () => new TelegramContentParser()
-		});
+	new OpenTextSummarizer.FileContentProvider("TextualData\\AutomaticSummarization.txt"),
+	new SummarizerArguments() {
+		Language = "en",
+		MaxSummarySentences = 5,
+		ContentParser = () => new TelegramContentParser()
+	});
 ```
 
 Have a look at the interfaces to see what each will needs for implementation.
