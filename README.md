@@ -1,7 +1,7 @@
 OpenTextSummarizer
 ==================
 
-.net port and adaptation of libots, initially ported by PatrickBurrows to C# and forked by yours truly as a kind of exercice after a review at http://samy.beaudoux.net/blog/?p=23
+.net port and adaptation of libots, initially ported by PatrickBurrows to C# and forked by [vrittis](https://github.com/vrittis) as a kind of exercice after a review at http://samy.beaudoux.net/blog/?p=23
 
 # Usage
 
