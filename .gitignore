@@ -214,3 +214,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+/.vs/OpenTextSummarizer/v16/Server/sqlite3
+/.vs/OpenTextSummarizer/v16/TestStore/0

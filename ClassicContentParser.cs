@@ -8,80 +8,77 @@ namespace OpenTextSummarizer
 {
     internal class ClassicContentParser : IContentParser
     {
-        internal Dictionary m_Rules { get; set; }
+        internal LanguageData Rules { get; set; }
 
-        public ITextUnitBuilder m_TextUnitBuilder { get; set; }
+        public ITextUnitBuilder TextUnitBuilder { get; set; }
 
-        public ClassicContentParser(Dictionary rules, ITextUnitBuilder textUnitBuilder)
+        public ClassicContentParser(LanguageData rules, ITextUnitBuilder textUnitBuilder)
         {
-            m_Rules = rules;
-            m_TextUnitBuilder = textUnitBuilder;
+            Rules = rules;
+            TextUnitBuilder = textUnitBuilder;
         }
 
-        public List<Sentence> SplitContentIntoSentences(string Content)
+        public List<Sentence> SplitContentIntoSentences(string content)
         {
             var listSentences = new List<Sentence>();
-            if (string.IsNullOrEmpty(Content))
+            if (string.IsNullOrEmpty(content))
             {
                 return listSentences;
             }
 
-            string[] words = Content.Split(' ', '\r'); //space and line feed characters are the ends of words.
-            Sentence cursentence = new Sentence() { OriginalSentenceIndex = listSentences.Count };
-            listSentences.Add(cursentence);
-            StringBuilder originalSentence = new StringBuilder();
+            string[] words = content.Split(' ', '\r'); //space and line feed characters are the ends of words
+            Sentence currentSentence = new Sentence { OriginalSentenceIndex = listSentences.Count };
+            listSentences.Add(currentSentence);
+            var originalSentence = new StringBuilder();
             foreach (string word in words)
             {
                 string locWord = word;
-                if (locWord.StartsWith("\n") && word.Length > 2) locWord = locWord.Replace("\n", "");
+                if (locWord.StartsWith("\n") && word.Length > 2)
+                {
+                    locWord = locWord.Replace("\n", string.Empty);
+                }
 
                 if (IsSentenceBreak(locWord))
                 {
-                    originalSentence.AppendFormat("{0}", locWord);
-                    cursentence.OriginalSentence = originalSentence.ToString();
-                    cursentence = new Sentence() { OriginalSentenceIndex = listSentences.Count };
+                    originalSentence.Append(locWord);
+                    currentSentence.OriginalSentence = originalSentence.ToString();
+                    currentSentence = new Sentence { OriginalSentenceIndex = listSentences.Count };
                     originalSentence = new StringBuilder();
-                    listSentences.Add(cursentence);
+                    listSentences.Add(currentSentence);
                 }
                 else
                 {
-                    originalSentence.AppendFormat("{0} ", locWord);
+                    originalSentence.Append($"{locWord} ");
                 }
             }
-            cursentence.OriginalSentence = originalSentence.ToString();
+            currentSentence.OriginalSentence = originalSentence.ToString();
             return listSentences;
         }
 
         private bool IsSentenceBreak(string word)
         {
-            if (word.Contains("\r") || word.Contains("\n")) return true;
-            bool shouldBreak = (m_Rules.LinebreakRules
-                .Where(p => word.EndsWith(p, StringComparison.CurrentCultureIgnoreCase))
-                .Count() > 0);
+            if (word.Contains("\r") || word.Contains("\n"))
+            {
+                return true;
+            }
 
-            if (shouldBreak == false) return shouldBreak;
+            bool shouldBreak = Rules.LinebreakRules.Any(s => word.EndsWith(s, StringComparison.CurrentCultureIgnoreCase));
+            if (shouldBreak == false)
+            {
+                return false;
+            }
 
-            shouldBreak = (m_Rules.NotALinebreakRules
-                .Where(p => word.StartsWith(p, StringComparison.CurrentCultureIgnoreCase))
-                .Count() == 0);
-
+            shouldBreak = !Rules.NotALinebreakRules.Any(s => word.StartsWith(s, StringComparison.CurrentCultureIgnoreCase));
             return shouldBreak;
         }
 
         public List<TextUnit> SplitSentenceIntoTextUnits(string sentence)
         {
-            var listUnits = new List<TextUnit>();
-            if (string.IsNullOrEmpty(sentence))
-            {
-                return listUnits;
-            }
-
-            foreach (string word in sentence.Split(' ', '\r'))
-            {
-                listUnits.Add(m_TextUnitBuilder.Build(word));
-            }
-
-            return listUnits;
+            return string.IsNullOrEmpty(sentence)
+                ? new List<TextUnit>()
+                : sentence.Split(' ', '\r')
+                    .Select(word => TextUnitBuilder.Build(word))
+                    .ToList();
         }
     }
 }

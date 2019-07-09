@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace OpenTextSummarizer.Interfaces
 {
@@ -13,9 +10,9 @@ namespace OpenTextSummarizer.Interfaces
         /// <summary>
         /// Returns content as list of sentences
         /// </summary>
-        /// <param name="Content">The content that needs to be split into sentences</param>
+        /// <param name="content">The content that needs to be split into sentences</param>
         /// <returns>List of sentences that compose the content</returns>
-        List<Sentence> SplitContentIntoSentences(string Content);
+        List<Sentence> SplitContentIntoSentences(string content);
 
         /// <summary>
         /// Returns a sentence as 

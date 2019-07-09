@@ -73,7 +73,7 @@
     <Compile Include="SummarizerArguments.cs" />
     <Compile Include="TextUnit.cs" />
     <Compile Include="TextUnitScore.cs" />
-    <Compile Include="Dictionary.cs" />
+    <Compile Include="LanguageData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

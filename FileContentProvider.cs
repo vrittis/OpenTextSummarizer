@@ -7,13 +7,13 @@ namespace OpenTextSummarizer
     {
         public string FilePath { get; set; }
 
-        public string Content { get; private set; }
+        public string Content { get; }
 
         public FileContentProvider(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
             {
-                throw new ArgumentNullException("filePath");
+                throw new ArgumentNullException(nameof(filePath));
             }
 
             if (!System.IO.File.Exists(filePath))

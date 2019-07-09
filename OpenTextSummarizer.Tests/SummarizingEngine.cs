@@ -1,13 +1,12 @@
-﻿using NSubstitute;
-using NUnit.Framework;
-using OpenTextSummarizer.Interfaces;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using NSubstitute;
+using NUnit.Framework;
+using OpenTextSummarizer.Interfaces;
 
-namespace OpenTextSummarizer.Tests.SummarizingEngine
+namespace OpenTextSummarizer.Tests
 {
     [TestFixture]
     public abstract class SummarizingEngine
@@ -22,29 +21,29 @@ namespace OpenTextSummarizer.Tests.SummarizingEngine
 
         public class ParseContent : SummarizingEngine
         {
-            internal OpenTextSummarizer.Interfaces.IContentProvider TargetContentProvider { get; set; }
+            internal IContentProvider TargetContentProvider { get; set; }
 
-            internal OpenTextSummarizer.Interfaces.IContentParser TargetContentParser { get; set; }
+            internal IContentParser TargetContentParser { get; set; }
 
-            internal const string content = "content";
-            internal const string sentence1 = "sentence1";
-            internal const string sentence2 = "sentence2";
+            internal const string Content = "content";
+            internal const string Sentence1 = "sentence1";
+            internal const string Sentence2 = "sentence2";
 
             [SetUp]
             public void before_each_test_setup()
             {
                 TargetContentProvider = Substitute.For<IContentProvider>();
-                TargetContentProvider.Content.Returns(content);
+                TargetContentProvider.Content.Returns(Content);
                 TargetContentParser = Substitute.For<IContentParser>();
                 TargetContentParser.SplitContentIntoSentences(Arg.Any<string>()).Returns(
                     new List<Sentence>() {
-                    new Sentence() { OriginalSentence = sentence1 } ,
-                    new Sentence() { OriginalSentence = sentence2 }
+                    new Sentence() { OriginalSentence = Sentence1 } ,
+                    new Sentence() { OriginalSentence = Sentence2 }
                 }
                 );
                 TargetContentParser.SplitSentenceIntoTextUnits(Arg.Any<string>()).Returns(
                     new List<TextUnit>() {
-                    new TextUnit() { RawValue = content}
+                    new TextUnit() { RawValue = Content}
                 }
                 );
             }
@@ -76,15 +75,15 @@ namespace OpenTextSummarizer.Tests.SummarizingEngine
             public void calls_IContentParser_SplitContentIntoSentences_with_the_content_of_the_IContentProvider()
             {
                 Target.ParseContent(TargetContentProvider, TargetContentParser);
-                TargetContentParser.Received(1).SplitContentIntoSentences(content);
+                TargetContentParser.Received(1).SplitContentIntoSentences(Content);
             }
 
             [Test]
             public void calls_IContentParser_SplitSentenceIntoTextUnits_with_each_sentence_content()
             {
                 Target.ParseContent(TargetContentProvider, TargetContentParser);
-                TargetContentParser.Received(1).SplitSentenceIntoTextUnits(sentence1);
-                TargetContentParser.Received(1).SplitSentenceIntoTextUnits(sentence2);
+                TargetContentParser.Received(1).SplitSentenceIntoTextUnits(Sentence1);
+                TargetContentParser.Received(1).SplitSentenceIntoTextUnits(Sentence2);
             }
 
             [Test]
@@ -279,11 +278,11 @@ namespace OpenTextSummarizer.Tests.SummarizingEngine
             [Test]
             public void checks_and_corrects_downward_range_on_arguments()
             {
-                TargetSummarizerArguments.FilteringConceptsCap.Returns(-10);
+                TargetSummarizerArguments.MaxConceptsInPercent.Returns(-10);
                 TargetSummarizerArguments.MaxSummarySentences.Returns(-10);
                 TargetSummarizerArguments.MaxSummarySizeInPercent.Returns(-10);
                 Target.SummarizeAnalysedContent(TargetAnalyzedDocument, TargetContentSummarizer, TargetSummarizerArguments);
-                Assert.AreEqual(0, TargetSummarizerArguments.FilteringConceptsCap);
+                Assert.AreEqual(0, TargetSummarizerArguments.MaxConceptsInPercent);
                 Assert.AreEqual(0, TargetSummarizerArguments.MaxSummarySentences);
                 Assert.AreEqual(0, TargetSummarizerArguments.MaxSummarySizeInPercent);
             }

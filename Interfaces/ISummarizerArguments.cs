@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OpenTextSummarizer.Interfaces
 {
@@ -16,7 +13,7 @@ namespace OpenTextSummarizer.Interfaces
         /// may however have more than 5 concepts if some concepts have the same frequency as the
         /// fifth concept in the list.
         /// </summary>
-        int FilteringConceptsCap { get; set; }
+        int MaxConceptsInPercent { get; set; }
 
         /// <summary>
         /// Sets the maximum number of sentences to return in the summary; the upper limit is

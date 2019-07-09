@@ -1,22 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using OpenTextSummarizer.Interfaces;
+﻿using OpenTextSummarizer.Interfaces;
+using System.Collections.Generic;
 
 namespace OpenTextSummarizer
 {
     internal class TextUnitBuilder : ITextUnitBuilder
     {
-        internal Dictionary m_Rules { get; set; }
+        internal LanguageData Rules { get; set; }
 
-        public TextUnitBuilder(Dictionary Rules)
+        public TextUnitBuilder(LanguageData rules)
         {
-            m_Rules = Rules;
+            Rules = rules;
         }
 
         public TextUnit Build(string word)
         {
-            var builtTextUnit = new TextUnit();
-            builtTextUnit.RawValue = word.ToLower();
+            var builtTextUnit = new TextUnit { RawValue = word.ToLower() };
             builtTextUnit.FormattedValue = Format(builtTextUnit.RawValue);
             builtTextUnit.Stem = Stem(builtTextUnit.FormattedValue);
             if (builtTextUnit.Stem.Length <= 2)
@@ -28,18 +26,17 @@ namespace OpenTextSummarizer
 
         internal string Stem(string word)
         {
-            word = ReplaceWord(word, m_Rules.ManualReplacementRules);
-            word = StripPrefix(word, m_Rules.PrefixRules);
-            word = StripSuffix(word, m_Rules.SuffixRules);
-            word = ReplaceWord(word, m_Rules.SynonymRules);
-
+            word = ReplaceWord(word, Rules.ManualReplacementRules);
+            word = StripPrefix(word, Rules.PrefixRules);
+            word = StripSuffix(word, Rules.SuffixRules);
+            word = ReplaceWord(word, Rules.SynonymRules);
             return word;
         }
 
         internal string Format(string word)
         {
-            word = StripPrefix(word, m_Rules.Step1PrefixRules);
-            word = StripSuffix(word, m_Rules.Step1SuffixRules);
+            word = StripPrefix(word, Rules.Step1PrefixRules);
+            word = StripSuffix(word, Rules.Step1SuffixRules);
             return word;
         }
 
@@ -54,7 +51,6 @@ namespace OpenTextSummarizer
                     word = word.Substring(0, word.Length - rule.Key.Length) + rule.Value;
                 }
             }
-
             return word;
         }
 
@@ -67,7 +63,6 @@ namespace OpenTextSummarizer
                     return rule.Value;
                 }
             }
-
             return word;
         }
 

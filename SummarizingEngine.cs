@@ -19,32 +19,35 @@ namespace OpenTextSummarizer
         {
             if (contentProvider == null)
             {
-                throw new ArgumentNullException("contentProvider");
+                throw new ArgumentNullException(nameof(contentProvider));
             }
             if (contentParser == null)
             {
-                throw new ArgumentNullException("contentParser");
+                throw new ArgumentNullException(nameof(contentParser));
             }
 
-            var resultingParsedDocument = new ParsedDocument();
-            resultingParsedDocument.Sentences = contentParser.SplitContentIntoSentences(contentProvider.Content);
+            var resultingParsedDocument = new ParsedDocument
+            {
+                Sentences = contentParser.SplitContentIntoSentences(contentProvider.Content)
+            };
             if (resultingParsedDocument.Sentences == null)
             {
-                throw new InvalidOperationException(string.Format("{0}.SplitContentIntoSentences must not return null", contentProvider.GetType().FullName));
+                throw new InvalidOperationException($"{contentProvider.GetType().FullName}.SplitContentIntoSentences must not return null");
             }
+
             foreach (var workingSentence in resultingParsedDocument.Sentences)
             {
                 workingSentence.TextUnits = contentParser.SplitSentenceIntoTextUnits(workingSentence.OriginalSentence);
                 if (workingSentence.TextUnits == null)
                 {
-                    throw new InvalidOperationException(string.Format("{0}.SplitSentenceIntoTextUnits must not return null", contentProvider.GetType().FullName));
+                    throw new InvalidOperationException($"{contentProvider.GetType().FullName}.SplitSentenceIntoTextUnits must not return null");
                 }
             }
             return resultingParsedDocument;
         }
 
         /// <summary>
-        /// Runs the content analyzis part of the summarizing algorithm
+        /// Runs the content analysis part of the summarizing algorithm
         /// </summary>
         /// <param name="parsedDocument"></param>
         /// <param name="contentAnalyzer"></param>
@@ -53,22 +56,22 @@ namespace OpenTextSummarizer
         {
             if (parsedDocument == null)
             {
-                throw new ArgumentNullException("parsedDocument");
+                throw new ArgumentNullException(nameof(parsedDocument));
             }
             if (contentAnalyzer == null)
             {
-                throw new ArgumentNullException("contentAnalyzer");
+                throw new ArgumentNullException(nameof(contentAnalyzer));
             }
 
             var importantTextUnits = contentAnalyzer.GetImportantTextUnits(parsedDocument.Sentences);
             if (importantTextUnits == null)
             {
-                throw new InvalidOperationException(string.Format("{0}.GetImportantTextUnits must not return null", contentAnalyzer.GetType().FullName));
+                throw new InvalidOperationException($"{contentAnalyzer.GetType().FullName}.GetImportantTextUnits must not return null");
             }
             var scoredSentences = contentAnalyzer.ScoreSentences(parsedDocument.Sentences, importantTextUnits);
             if (scoredSentences == null)
             {
-                throw new InvalidOperationException(string.Format("{0}.ScoreSentences must not return null", contentAnalyzer.GetType().FullName));
+                throw new InvalidOperationException($"{contentAnalyzer.GetType().FullName}.ScoreSentences must not return null");
             }
 
             return new AnalyzedDocument() { ScoredTextUnits = importantTextUnits.OrderByDescending(tus => tus.Score).ToList(), ScoredSentences = scoredSentences.OrderByDescending(ss => ss.Score).ToList() };
@@ -85,23 +88,27 @@ namespace OpenTextSummarizer
         {
             if (analyzedDocument == null)
             {
-                throw new ArgumentNullException("analyzedDocument");
+                throw new ArgumentNullException(nameof(analyzedDocument));
             }
 
             if (contentSummarizer == null)
             {
-                throw new ArgumentNullException("contentSummarizer");
+                throw new ArgumentNullException(nameof(contentSummarizer));
             }
 
             if (arguments == null)
             {
-                throw new ArgumentNullException("arguments");
+                throw new ArgumentNullException(nameof(arguments));
             }
 
             // Range adjustment
-            if (arguments.FilteringConceptsCap < 0)
+            if (arguments.MaxConceptsInPercent < 0)
             {
-                arguments.FilteringConceptsCap = 0;
+                arguments.MaxConceptsInPercent = 0;
+            }
+            else if (arguments.MaxConceptsInPercent > 100)
+            {
+                arguments.MaxConceptsInPercent = 100;
             }
 
             if (arguments.MaxSummarySentences < 0)
@@ -113,8 +120,7 @@ namespace OpenTextSummarizer
             {
                 arguments.MaxSummarySizeInPercent = 0;
             }
-
-            if (arguments.MaxSummarySizeInPercent > 100)
+            else if (arguments.MaxSummarySizeInPercent > 100)
             {
                 arguments.MaxSummarySizeInPercent = 100;
             }
@@ -122,16 +128,20 @@ namespace OpenTextSummarizer
             var summarizedConcepts = contentSummarizer.GetConcepts(analyzedDocument, arguments);
             if (summarizedConcepts == null)
             {
-                throw new InvalidOperationException(string.Format("{0}.GetConcepts must not return null", contentSummarizer.GetType().FullName));
+                throw new InvalidOperationException($"{contentSummarizer.GetType().FullName}.GetConcepts must not return null");
             }
 
             var summarizedSentences = contentSummarizer.GetSentences(analyzedDocument, arguments);
             if (summarizedSentences == null)
             {
-                throw new InvalidOperationException(string.Format("{0}.GetSentences must not return null", contentSummarizer.GetType().FullName));
+                throw new InvalidOperationException($"{contentSummarizer.GetType().FullName}.GetSentences must not return null");
             }
 
-            return new SummarizedDocument() { Concepts = summarizedConcepts, Sentences = summarizedSentences };
+            return new SummarizedDocument
+            {
+                Concepts = summarizedConcepts,
+                Sentences = summarizedSentences
+            };
         }
     }
 }

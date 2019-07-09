@@ -5,7 +5,7 @@ namespace OpenTextSummarizer
 {
     public class SummarizerArguments : ISummarizerArguments
     {
-        public int FilteringConceptsCap { get; set; }
+        public int MaxConceptsInPercent { get; set; }
 
         public int MaxSummarySentences { get; set; }
 
@@ -13,10 +13,13 @@ namespace OpenTextSummarizer
 
         public string Language { get; set; }
 
+        private LanguageData _rules;
+        private readonly object _rulesLock = new object();
+
         public SummarizerArguments()
         {
             Language = "en";
-            FilteringConceptsCap = 5;
+            MaxConceptsInPercent = 5;
             MaxSummarySentences = 10;
             MaxSummarySizeInPercent = 10;
 
@@ -25,24 +28,21 @@ namespace OpenTextSummarizer
             ContentSummarizer = () => new ClassicContentSummarizer();
         }
 
-        private Dictionary m_Rules = null;
-        private object m_RulesLock = new object();
-
-        internal Dictionary Rules
+        public LanguageData Rules
         {
             get
             {
-                if (m_Rules == null)
+                if (_rules == null)
                 {
-                    lock (m_RulesLock)
+                    lock (_rulesLock)
                     {
-                        if (m_Rules == null)
+                        if (_rules == null)
                         {
-                            m_Rules = Dictionary.LoadFromFile(Language);
+                            _rules = LanguageData.LoadFromFile(Language);
                         }
                     }
                 }
-                return m_Rules;
+                return _rules;
             }
         }
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace OpenTextSummarizer.Interfaces
+﻿namespace OpenTextSummarizer.Interfaces
 {
     /// <summary>
     /// Interface to the formatting and stemming of textual units
