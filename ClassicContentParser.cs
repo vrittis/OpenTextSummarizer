@@ -43,7 +43,7 @@ namespace OpenTextSummarizer
                     originalSentence.Append(locWord.Trim());
                     currentSentence.OriginalSentence = originalSentence.ToString();
                     currentSentence = new Sentence { OriginalSentenceIndex = listSentences.Count };
-                    originalSentence = new StringBuilder();
+                    originalSentence.Clear();
                     listSentences.Add(currentSentence);
                 }
                 else
@@ -63,14 +63,16 @@ namespace OpenTextSummarizer
                 return true;
             }
 
-            bool shouldBreak = Rules.LinebreakRules.Any(s => word.EndsWith(s, StringComparison.CurrentCultureIgnoreCase));
+            bool shouldBreak = Rules.LinebreakRules
+                .Any(text => word.EndsWith(text, StringComparison.CurrentCultureIgnoreCase));
+
             if (shouldBreak == false)
             {
                 return false;
             }
 
-            shouldBreak = !Rules.NotALinebreakRules.Any(s => word.StartsWith(s, StringComparison.CurrentCultureIgnoreCase));
-            return shouldBreak;
+            return !Rules.NotALinebreakRules
+                .Any(text => word.StartsWith(text, StringComparison.CurrentCultureIgnoreCase));
         }
 
         public List<TextUnit> SplitSentenceIntoTextUnits(string sentence)
