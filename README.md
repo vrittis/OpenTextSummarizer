@@ -1,7 +1,8 @@
 OpenTextSummarizer
 ==================
 
-.net port and adaptation of libots, initially ported by PatrickBurrows to C# and forked by [vrittis](https://github.com/vrittis) as a kind of exercice after a [review](http://samy.beaudoux.net/blog/?p=23).
+.Net port and adaptation of libots, initially ported by PatrickBurrows to C# and forked by [vrittis](https://github.com/vrittis) as a kind of exercice after a [review](http://samy.beaudoux.net/blog/?p=23). 
+This version has since been forked by [davidsblog](https://github.com/davidsblog).
 
 # Usage
 
@@ -74,7 +75,6 @@ Have a look at the interfaces to see what each will needs for implementation.
 This version of OpenTextSummarizer has been pushed to Github in order to correct some bugs. I've tried to make it extensible a bit more than what was initially ported.
 The initial port this version started from is located on [codeplex](http://ots.codeplex.com) and was written for .Net 2. It now uses .Net 3.5
 
-Roadmap:
-* ~~Add qualification tests~~ (almost done, i will stop now for the time and starting changing behaviors)
-* ~~fix bugs (stemmer bug on lowercasing of some words only)~~
-* add configurable behavior
+## Latest Notes
+
+I have updated this fork of the code to .Net 4.7 and taken the latest nuget packages.  I've also done quite a bit of refactoring.

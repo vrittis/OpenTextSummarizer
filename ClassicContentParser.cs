@@ -40,7 +40,7 @@ namespace OpenTextSummarizer
 
                 if (IsSentenceBreak(locWord))
                 {
-                    originalSentence.Append(locWord);
+                    originalSentence.Append(locWord.Trim());
                     currentSentence.OriginalSentence = originalSentence.ToString();
                     currentSentence = new Sentence { OriginalSentenceIndex = listSentences.Count };
                     originalSentence = new StringBuilder();
@@ -48,6 +48,7 @@ namespace OpenTextSummarizer
                 }
                 else
                 {
+                    locWord = locWord.Trim();
                     originalSentence.Append($"{locWord} ");
                 }
             }

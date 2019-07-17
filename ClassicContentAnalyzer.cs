@@ -18,8 +18,8 @@ namespace OpenTextSummarizer
 
         public List<TextUnitScore> GetImportantTextUnits(List<Sentence> sentences)
         {
-            var textUnitFrequencyGrader = new Dictionary<TextUnit, long>();
-            foreach (var tu in sentences.SelectMany(s => s.TextUnits))
+            var textUnitFrequencyGrader = new Dictionary<TextUnit, int>();
+            foreach (var tu in sentences.Where(sentence => sentence.TextUnits.Count > 0).SelectMany(s => s.TextUnits))
             {
                 if (Rules.UnimportantWords.Contains(tu.FormattedValue))
                 {
@@ -40,16 +40,15 @@ namespace OpenTextSummarizer
                 .Select(kvp => new TextUnitScore { ScoredTextUnit = kvp.Key, Score = kvp.Value })
                 .ToList();
         }
-
+        
         public List<SentenceScore> ScoreSentences(List<Sentence> sentences, List<TextUnitScore> importantTextUnits)
         {
-            var stemList = importantTextUnits.Select(tus => tus.ScoredTextUnit.Stem).Distinct().ToList();
+            var stemList = importantTextUnits.Select(tus => tus.ScoredTextUnit.Stem).Distinct().ToArray();
             var listSentenceScorer = new List<SentenceScore>();
-            foreach (var sentence in sentences.Where(s => s.TextUnits.Count > 2))
+            foreach (var sentence in sentences.Where(sentence => sentence.TextUnits.Count > 2))
             {
-                var newSentenceScorer = new SentenceScore { ScoredSentence = sentence };
-                newSentenceScorer.Score = newSentenceScorer.ScoredSentence.TextUnits.Count(tu => stemList.Contains(tu.Stem));
-
+                var newSentenceScorer = CalculateSentenceScore(sentence, stemList);
+                
                 if (sentence.TextUnits[0].RawValue.Contains("\n") && sentence.TextUnits[1].RawValue.Contains("\n"))
                 {
                     newSentenceScorer.Score *= 1.6;
@@ -65,6 +64,15 @@ namespace OpenTextSummarizer
             }
 
             return listSentenceScorer.OrderByDescending(sentenceScore => sentenceScore.Score).ToList();
+        }
+
+        private SentenceScore CalculateSentenceScore(Sentence sentence, IEnumerable<string> stemList)
+        {
+            return new SentenceScore
+            {
+                ScoredSentence = sentence,
+                Score = sentence.TextUnits.Count(textUnit => stemList.Contains(textUnit.Stem))
+            };
         }
     }
 }

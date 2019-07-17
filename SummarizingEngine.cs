@@ -28,21 +28,20 @@ namespace OpenTextSummarizer
 
             var resultingParsedDocument = new ParsedDocument
             {
-                Sentences = contentParser.SplitContentIntoSentences(contentProvider.Content)
+                Sentences = contentParser
+                    .SplitContentIntoSentences(contentProvider.Content)
+                    .Where(sentence => !string.IsNullOrWhiteSpace(sentence.OriginalSentence))
+                    .ToList()
             };
-            if (resultingParsedDocument.Sentences == null)
+            
+            foreach (Sentence workingSentence in resultingParsedDocument.Sentences)
             {
-                throw new InvalidOperationException($"{contentProvider.GetType().FullName}.SplitContentIntoSentences must not return null");
+                workingSentence.TextUnits = contentParser
+                    .SplitSentenceIntoTextUnits(workingSentence.OriginalSentence)
+                    .Where(word => !string.IsNullOrWhiteSpace(word.RawValue))
+                    .ToList();
             }
 
-            foreach (var workingSentence in resultingParsedDocument.Sentences)
-            {
-                workingSentence.TextUnits = contentParser.SplitSentenceIntoTextUnits(workingSentence.OriginalSentence);
-                if (workingSentence.TextUnits == null)
-                {
-                    throw new InvalidOperationException($"{contentProvider.GetType().FullName}.SplitSentenceIntoTextUnits must not return null");
-                }
-            }
             return resultingParsedDocument;
         }
 
@@ -74,7 +73,11 @@ namespace OpenTextSummarizer
                 throw new InvalidOperationException($"{contentAnalyzer.GetType().FullName}.ScoreSentences must not return null");
             }
 
-            return new AnalyzedDocument() { ScoredTextUnits = importantTextUnits.OrderByDescending(tus => tus.Score).ToList(), ScoredSentences = scoredSentences.OrderByDescending(ss => ss.Score).ToList() };
+            return new AnalyzedDocument
+            {
+                ScoredTextUnits = importantTextUnits.OrderByDescending(tus => tus.Score).ToList(),
+                ScoredSentences = scoredSentences.OrderByDescending(ss => ss.Score).ToList()
+            };
         }
 
         /// <summary>

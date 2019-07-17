@@ -1,5 +1,8 @@
-﻿namespace OpenTextSummarizer
+﻿using System.Diagnostics;
+
+namespace OpenTextSummarizer
 {
+    [DebuggerDisplay("Value: {FormattedValue} - Stem: {Stem} - Original: {RawValue}")]
     public class TextUnit
     {
         public string RawValue { get; set; }
@@ -10,11 +13,8 @@
 
         public override int GetHashCode()
         {
-            if (Stem == null)
-            {
-                return 0;
-            }
-            return Stem.GetHashCode();
+            // TODO: take a look at this  - non-readonly property referenced in GetHashCode()
+            return Stem != null ? Stem.GetHashCode() : 0;
         }
 
         public override bool Equals(object obj)

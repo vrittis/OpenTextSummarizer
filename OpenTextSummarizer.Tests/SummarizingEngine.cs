@@ -1,10 +1,10 @@
-﻿using System;
+﻿using NSubstitute;
+using NUnit.Framework;
+using OpenTextSummarizer.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NSubstitute;
-using NUnit.Framework;
-using OpenTextSummarizer.Interfaces;
 
 namespace OpenTextSummarizer.Tests
 {
@@ -25,9 +25,9 @@ namespace OpenTextSummarizer.Tests
 
             internal IContentParser TargetContentParser { get; set; }
 
-            internal const string Content = "content";
-            internal const string Sentence1 = "sentence1";
-            internal const string Sentence2 = "sentence2";
+            internal const string Content = "this is content";
+            internal const string Sentence1 = "is sentence one";
+            internal const string Sentence2 = "is sentence two";
 
             [SetUp]
             public void before_each_test_setup()
@@ -36,15 +36,17 @@ namespace OpenTextSummarizer.Tests
                 TargetContentProvider.Content.Returns(Content);
                 TargetContentParser = Substitute.For<IContentParser>();
                 TargetContentParser.SplitContentIntoSentences(Arg.Any<string>()).Returns(
-                    new List<Sentence>() {
-                    new Sentence() { OriginalSentence = Sentence1 } ,
-                    new Sentence() { OriginalSentence = Sentence2 }
-                }
+                    new List<Sentence>
+                    {
+                        new Sentence { OriginalSentence = Sentence1 } ,
+                        new Sentence { OriginalSentence = Sentence2 }
+                    }
                 );
                 TargetContentParser.SplitSentenceIntoTextUnits(Arg.Any<string>()).Returns(
-                    new List<TextUnit>() {
-                    new TextUnit() { RawValue = Content}
-                }
+                    new List<TextUnit>
+                    {
+                        new TextUnit { RawValue = Content}
+                    }
                 );
             }
 
@@ -68,7 +70,7 @@ namespace OpenTextSummarizer.Tests
             public void calls_IContentProvider_Content_property()
             {
                 Target.ParseContent(TargetContentProvider, TargetContentParser);
-                var result = TargetContentProvider.Received(1).Content;
+                string result = TargetContentProvider.Received(1).Content;
             }
 
             [Test]
@@ -99,19 +101,6 @@ namespace OpenTextSummarizer.Tests
                 var parsedDocument = Target.ParseContent(TargetContentProvider, TargetContentParser);
                 Assert.IsTrue(parsedDocument.Sentences.All(s => s.TextUnits.Count == 1));
             }
-
-            [Test]
-            public void throws_if_IContentParser_returns_null_list_of_sentences()
-            {
-                TargetContentParser.SplitContentIntoSentences(Arg.Any<string>()).Returns((List<Sentence>)null);
-                Assert.That(() => Target.ParseContent(TargetContentProvider, TargetContentParser), Throws.TypeOf<InvalidOperationException>());
-            }
-
-            public void throws_if_IContentParser_returns_null_list_of_textunits()
-            {
-                TargetContentParser.SplitSentenceIntoTextUnits(Arg.Any<string>()).Returns((List<TextUnit>)null);
-                Assert.That(() => Target.ParseContent(TargetContentProvider, TargetContentParser), Throws.TypeOf<InvalidOperationException>());
-            }
         }
 
         public class AnalyzeParsedContent : SummarizingEngine
@@ -130,12 +119,12 @@ namespace OpenTextSummarizer.Tests
                 TargetParsedDocument = new ParsedDocument();
                 TargetParsedDocument.Sentences = new List<Sentence>()
                 {
-                   TargetContainer.sentence
+                   TargetContainer.Sentence
                 };
 
                 TargetContentAnalyzer = Substitute.For<IContentAnalyzer>();
-                TargetContentAnalyzer.GetImportantTextUnits(Arg.Any<List<Sentence>>()).Returns(TargetContainer.scoredTextUnits);
-                TargetContentAnalyzer.ScoreSentences(Arg.Any<List<Sentence>>(), Arg.Any<List<TextUnitScore>>()).Returns(TargetContainer.scoredSentences);
+                TargetContentAnalyzer.GetImportantTextUnits(Arg.Any<List<Sentence>>()).Returns(TargetContainer.ScoredTextUnits);
+                TargetContentAnalyzer.ScoreSentences(Arg.Any<List<Sentence>>(), Arg.Any<List<TextUnitScore>>()).Returns(TargetContainer.ScoredSentences);
             }
 
             public static IEnumerable NullArgumentsSource
@@ -179,7 +168,7 @@ namespace OpenTextSummarizer.Tests
             public void calls_IContentAnalyzer_ScoreSentences_with_parsed_document_sentences_and_returning_scored_text_units()
             {
                 Target.AnalyzeParsedContent(TargetParsedDocument, TargetContentAnalyzer);
-                TargetContentAnalyzer.Received(1).ScoreSentences(TargetParsedDocument.Sentences, TargetContainer.scoredTextUnits);
+                TargetContentAnalyzer.Received(1).ScoreSentences(TargetParsedDocument.Sentences, TargetContainer.ScoredTextUnits);
             }
 
             [Test]
@@ -187,11 +176,11 @@ namespace OpenTextSummarizer.Tests
             {
                 var result = Target.AnalyzeParsedContent(TargetParsedDocument, TargetContentAnalyzer);
                 var resultSentenceScoreOrder = result.ScoredSentences.Select(s => s.Score);
-                var currentSentenceScoreOrder = TargetContainer.scoredSentences.OrderByDescending(s => s.Score).Select(s => s.Score).ToList();
+                var currentSentenceScoreOrder = TargetContainer.ScoredSentences.OrderByDescending(s => s.Score).Select(s => s.Score).ToList();
                 Assert.IsTrue(resultSentenceScoreOrder.SequenceEqual(currentSentenceScoreOrder), "Scored sentences have not been ordered in the analyzed document");
 
                 var resultTextUnitScoreOrder = result.ScoredTextUnits.Select(s => s.Score);
-                var currentTextUnitScoreOrder = TargetContainer.scoredTextUnits.OrderByDescending(s => s.Score).Select(s => s.Score).ToList();
+                var currentTextUnitScoreOrder = TargetContainer.ScoredTextUnits.OrderByDescending(s => s.Score).Select(s => s.Score).ToList();
                 Assert.IsTrue(resultTextUnitScoreOrder.SequenceEqual(currentTextUnitScoreOrder), "Scored text units have not been ordered in the analyzed document");
             }
         }
@@ -211,10 +200,10 @@ namespace OpenTextSummarizer.Tests
             {
                 TargetContainer = new SummarizationInformationContainer();
 
-                TargetAnalyzedDocument = new AnalyzedDocument()
+                TargetAnalyzedDocument = new AnalyzedDocument
                 {
-                    ScoredSentences = TargetContainer.scoredSentences,
-                    ScoredTextUnits = TargetContainer.scoredTextUnits
+                    ScoredSentences = TargetContainer.ScoredSentences,
+                    ScoredTextUnits = TargetContainer.ScoredTextUnits
                 };
 
                 TargetContentSummarizer = Substitute.For<IContentSummarizer>();
@@ -289,41 +278,42 @@ namespace OpenTextSummarizer.Tests
 
         public class SummarizationInformationContainer
         {
-            public const string textUnitText = "textunit";
-            public const string sentenceText = "sentence";
-            public TextUnit textUnit;
-            public List<TextUnitScore> scoredTextUnits;
-            public Sentence sentence;
-            public List<SentenceScore> scoredSentences;
+            public const string TextUnitText = "textunit";
+            public const string SentenceText = "sentence";
+            public TextUnit TextUnit;
+            public List<TextUnitScore> ScoredTextUnits;
+            public Sentence Sentence;
+            public List<SentenceScore> ScoredSentences;
 
             public SummarizationInformationContainer()
             {
-                textUnit = new TextUnit()
+                TextUnit = new TextUnit()
                 {
-                    RawValue = textUnitText,
-                    FormattedValue = textUnitText,
-                    Stem = textUnitText
+                    RawValue = TextUnitText,
+                    FormattedValue = TextUnitText,
+                    Stem = TextUnitText
                 };
 
-                scoredTextUnits = new List<TextUnitScore>() {
-                    new TextUnitScore() { Score = 15, ScoredTextUnit = textUnit},
-                    new TextUnitScore() { Score = 30, ScoredTextUnit = textUnit}
+                ScoredTextUnits = new List<TextUnitScore>
+                {
+                    new TextUnitScore { Score = 15, ScoredTextUnit = TextUnit},
+                    new TextUnitScore { Score = 30, ScoredTextUnit = TextUnit}
                 };
 
-                sentence = new Sentence()
+                Sentence = new Sentence
                 {
-                    OriginalSentence = sentenceText,
+                    OriginalSentence = SentenceText,
                     OriginalSentenceIndex = 0,
-                    TextUnits = new List<TextUnit>()
+                    TextUnits = new List<TextUnit>
                     {
-                        textUnit
+                        TextUnit
                     }
                 };
 
-                scoredSentences = new List<SentenceScore>()
+                ScoredSentences = new List<SentenceScore>
                 {
-                    new SentenceScore() {Score = 10, ScoredSentence = sentence},
-                    new SentenceScore() {Score = 20, ScoredSentence = sentence}
+                    new SentenceScore {Score = 10, ScoredSentence = Sentence},
+                    new SentenceScore {Score = 20, ScoredSentence = Sentence}
                 };
             }
         }
