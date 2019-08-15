@@ -1,13 +1,15 @@
-﻿using System;
+﻿using OpenTextSummarizer.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OpenTextSummarizer.Interfaces;
 
 namespace OpenTextSummarizer
 {
     internal class ClassicContentParser : IContentParser
     {
+        private static readonly char[] Wordbreaks = { ' ', '\r', '\t', '\v', '\u00A0' }; // space, return, h-tab, v-tab, non-breaking space
+
         internal LanguageData Rules { get; set; }
 
         public ITextUnitBuilder TextUnitBuilder { get; set; }
@@ -26,7 +28,7 @@ namespace OpenTextSummarizer
                 return listSentences;
             }
 
-            string[] words = content.Split(' ', '\r'); //space and line feed characters are the ends of words
+            string[] words = content.Split(Wordbreaks);
             Sentence currentSentence = new Sentence { OriginalSentenceIndex = listSentences.Count };
             listSentences.Add(currentSentence);
             var originalSentence = new StringBuilder();
@@ -63,23 +65,21 @@ namespace OpenTextSummarizer
                 return true;
             }
 
-            bool shouldBreak = Rules.LinebreakRules
-                .Any(text => word.EndsWith(text, StringComparison.CurrentCultureIgnoreCase));
+            bool shouldBreak = Rules.LinebreakRules.Any(text => word.EndsWith(text, StringComparison.CurrentCultureIgnoreCase));
 
             if (shouldBreak == false)
             {
                 return false;
             }
 
-            return !Rules.NotALinebreakRules
-                .Any(text => word.StartsWith(text, StringComparison.CurrentCultureIgnoreCase));
+            return !Rules.NotALinebreakRules.Any(text => word.StartsWith(text, StringComparison.CurrentCultureIgnoreCase));
         }
 
         public List<TextUnit> SplitSentenceIntoTextUnits(string sentence)
         {
             return string.IsNullOrEmpty(sentence)
                 ? new List<TextUnit>()
-                : sentence.Split(' ', '\r')
+                : sentence.Split(Wordbreaks)
                     .Select(word => TextUnitBuilder.Build(word))
                     .ToList();
         }
